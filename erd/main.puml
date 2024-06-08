@@ -1,0 +1,23 @@
+@startuml
+!define Table(name) entity name << (T, white) >>
+skinparam linetype ortho
+
+Table(BriefRequests) {
+    +_id [PK, uuid]
+    UserAgent [varchar]
+    Type [varchar]
+    Industry [varchar]
+    CustomPrompt [varchar]
+    DateCreated [datetime] 
+}
+
+Table(BriefResponse) {
+    +_id [PK, uuid]
+    BriefRequestId [FK, uuid]
+    BriefResponse [varchar]
+    DateCreated [datetime] 
+}
+
+BriefRequests - BriefResponse
+
+@enduml
