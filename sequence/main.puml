@@ -1,0 +1,94 @@
+@startuml
+
+autonumber
+
+title Generate brief with AI
+header Generate brief with AI
+caption Generate brief with AI
+
+skinparam ParticipantBackgroundColor White
+skinparam ActorBackgroundColor Yellow
+skinparam DatabaseBackgroundColor Violet
+
+actor "User" as user <<(A, Yellow)>>
+participant "Brief Generator Website" as website <<(P, LightBlue)>>
+participant "Brief Generator API" as backend <<(P, LightBlue)>>
+participant "Langchain" as langchain <<(P, LightBlue)>>
+participant "Gemini AI Model" as gemini <<(P, LightBlue)>>
+participant "Zoho Email Service" as zoho_email <<(P, LightBlue)>>
+database "MongoDB Database" as database <<(P, LightBlue)>>
+
+note right of user
+User interacts with the website 
+to generate a brief using AI.
+end note
+
+user -> website : enter brief parameters
+note right of website
+Website takes user input and 
+sends a request to the backend API.
+end note
+
+website -> backend : send brief request to backend API
+note right of backend
+Backend processes the request 
+and wraps it in a Langchain block.
+end note
+
+backend -> database : saves request to database
+backend -> langchain : processes request and wraps it in a langchain block
+
+
+note right of database
+Request details are stored 
+in the MongoDB database.
+end note
+
+langchain -> gemini : sends request to gemini model
+note right of gemini
+Gemini AI Model processes the 
+request and generates a response.
+end note
+
+gemini --> langchain : receives response from gemini model
+langchain --> backend : wraps response in langchain output structure
+note right of backend
+Backend receives the structured 
+response from Langchain.
+end note
+
+backend -> database : saves response from gemini model
+database --> backend : response saved to database
+backend --> website : response sent to website
+website --> user : brief generated
+note right of user
+User receives the generated brief.
+end note
+
+alt#White #LightGreen export brief = true
+    note right of website
+    User opts to export the brief via email.
+    end note
+    
+    website -> user : request for email
+    user --> website : enter email address
+    website -> backend : send response ID and email to the backend for an email request
+    note right of backend
+    Backend sends the response ID and email 
+    address to the Zoho Email Service.
+    end note
+    
+    backend -> zoho_email : send email
+    zoho_email --> backend : email sent
+    backend --> website : email sent
+    website X--> user : email confirmation
+    note right of user
+    User receives email confirmation.
+    end note
+else #LightPink export brief = false
+    note over website
+    Nothing happens here. Process ends.
+    end note
+end
+
+@enduml
